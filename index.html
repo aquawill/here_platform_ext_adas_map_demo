@@ -379,7 +379,7 @@
                         document.getElementById('pde_adas').innerHTML = output_text;
                     }
                     else {
-                        document.getElementById('pde_adas').innerHTML = '';
+                        document.getElementById('pde_adas').innerHTML = '<mark>Unable To Locate A Valid Link, Try Again.</mark>';
                     }
                 }).catch(function onRejected(error) {
                     console.error(error);
