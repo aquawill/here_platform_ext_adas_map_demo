@@ -1,37 +1,29 @@
-## Welcome to GitHub Pages
+**ADAS Map With HERE Platform Extension**
 
-You can use the [editor on GitHub](https://github.com/aquawill/here_platform_ext_adas_map_demo/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+Url: https://aquawill.github.io/here_platform_ext_adas_map_demo/
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+1. Display Slopes of Links by Color:
+    * Dash: Slope < 1°
+    * RGB(51, 17, 187): 1° <= Slope < 2°
+    * RGB(17, 170, 187): 2° <= Slope < 3°
+    * RGB(105, 208, 37): 3° <= Slope < 4°
+    * RGB(208, 195, 16): 4° <= Slope < 5°
+    * RGB(255, 153, 51): 5° <= Slope < 6°
+    * RGB(238, 17, 0): Slope >= 6°
+2. Check detailed ADAS attributes (Right Click On the Link):
+    * High Precision 3D Geo Coordinates
+    * Slopes
+    * Curvatures
+    * Headings
 
-### Markdown
+Powered byHERE Location Services:
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/aquawill/here_platform_ext_adas_map_demo/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+* HERE JS API (Interactive Map)
+    * https://developer.here.com/develop/javascript-api
+* HERE Platform Data Extension
+    * Map Rendering (Slope by Color)
+        * https://developer.here.com/documentation/platform-data/topics/quick-start-view-map-data.html
+    * ADAS Attributes of Link
+        * https://developer.here.com/documentation/maps/topics/pde.html
+    
+Discover more about HERE Location Solutions: https://developer.here.com/
