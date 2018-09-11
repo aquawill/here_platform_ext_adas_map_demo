@@ -25,8 +25,9 @@
 </head>
 
 <body onresize="resize()">
-    <div id="pde_adas" style=" position: absolute; top: 20px; z-index: 1000; left: 20px; ">
-        <textarea id="pde_adas" type="text" style="font-size: 16px"></textarea>
+    <div id="searchbar" style=" position: absolute; top: 20px; z-index: 1000; left: 20px; ">
+        <input id="geocoder_box" type="text" style="font-size: 16px;" placeholder="搜尋行政區、道路、地址" maxlength="50" size="40"> </div>
+    <div id="pde_adas" style=" position: absolute; top: 66px; z-index: 1000; left: 20px; ">
         <script type="text/javascript" charset="UTF-8">
             document.getElementById('pde_adas').innerHTML = '';
         </script>
@@ -41,7 +42,7 @@
                 , useHTTPS: true
                 , useCIT: true
             });
-            //var geocoder = platform.getGeocodingService();
+            var geocoder = platform.getGeocodingService();
             //var router = platform.getRoutingService();
             var pde_service = platform.getPlatformDataService();
             var pixelRatio = window.devicePixelRatio || 1;
@@ -63,11 +64,13 @@
             var marker_group = new H.map.Group();
             var adas_geo_group = new H.map.Group();
             var selected_link_group = new H.map.Group();
+            var geocoder_result_group = new H.map.Group();
             selected_link_group.setZIndex(1000);
             adas_geo_group.setZIndex(2000);
             map.addObject(marker_group);
             map.addObject(adas_geo_group);
             map.addObject(selected_link_group);
+            map.addObject(geocoder_result_group);
             navigator.geolocation.getCurrentPosition(function (location) {
                 var gps_location_marker = new H.map.Circle({
                     lat: location.coords.latitude
@@ -136,6 +139,60 @@
                     }
                 }
             }
+            document.getElementById('searchbar').addEventListener('keypress', onSearch)
+
+            function onSearch(e) {
+                var keyCode = null;
+                if (e.which) {
+                    keyCode = e.which;
+                }
+                else if (e.keyCode) {
+                    keyCode = e.keyCode;
+                }
+                if (keyCode == 13) {
+                    var geocoder_string = e.srcElement.value;
+                    var geocodingParams = {
+                        searchText: geocoder_string
+                    };
+                    geocoder.geocode(geocodingParams, show_geocode_result, function (e) {
+                        console.log(e);
+                    });
+                }
+            }
+
+            function show_geocode_result(result) {
+                geocoder_result_group.removeAll();
+                console.log(result);
+                if (result.Response.View.length > 0) {
+                    var location = result.Response.View[0].Result[0]
+                        , display_position = location['Location']['DisplayPosition']
+                        , lat = display_position['Latitude']
+                        , lng = display_position['Longitude'];
+                    map.setCenter({
+                        lat: lat
+                        , lng: lng
+                    });
+                    var geocoder_result_marker = new H.map.Marker({
+                        lat: lat
+                        , lng: lng
+                    })
+                    geocoder_result_marker.setData(location['Location']['Address']['Label']);
+                    var bubble = new H.ui.InfoBubble({
+                        lat: lat
+                        , lng: lng
+                    }, {
+                        content: location['Location']['Address']['Label']
+                    })
+                    geocoder_result_marker.addEventListener('tap', function () {
+                        purge_bubble();
+                        ui.addBubble(bubble);
+                    });
+                    geocoder_result_group.addObject(geocoder_result_marker);
+                }
+                else {
+                    window.alert('Please input a valid address!');
+                }
+            };
             var adas_list = [];
             var key_attribute_list = [];
 
@@ -385,7 +442,7 @@
                     console.error(error);
                 });
             }
-            map.addEventListener('dragend', function () {
+            map.addEventListener('mapviewchangeend', function () {
                 marker_group.removeAll();
                 adas_geo_group.removeAll();
                 document.getElementById('pde_adas').innerHTML = '';
