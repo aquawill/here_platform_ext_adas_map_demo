@@ -3,11 +3,11 @@
 
 <head>
     <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-    <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.0/mapsjs-ui.css?dp-version=1533195059" />
-    <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-core.js"></script>
-    <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-service.js"></script>
-    <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-ui.js"></script>
-    <script type="text/javascript" src="https://js.api.here.com/v3/3.0/mapsjs-mapevents.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-core.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-service.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
     <style>
         html,
         body {
@@ -34,11 +34,9 @@
     </div>
     <div id="map">
         <script type="text/javascript" charset="UTF-8">
-            var he_appid = 'JDuZcEECeUBXGkFT6zp9';
-            var he_appcode = 'pTa6-IjR6ElKf0kjAolO2A';
+            var he_apikey = 'MWhgdlPiOEHmTkcc8E7o-KNJjmtYX2-HS77gsGWuT6s';
             var platform = new H.service.Platform({
-                app_id: he_appid
-                , app_code: he_appcode
+                apikey: he_apikey
                 , useHTTPS: true
                 , useCIT: false
             });
@@ -52,7 +50,7 @@
                 tileSize: tile_size
                 , ppi: ppi
             , });
-            var map = new H.Map(document.getElementById('map'), defaultLayers.terrain.map, {
+            var map = new H.Map(document.getElementById('map'), defaultLayers.raster.satellite.map, {
                 center: {
                     lat: 25.040053
                     , lng: 121.511976
@@ -100,7 +98,6 @@
                     lat: location.coords.latitude
                     , lng: location.coords.longitude
                 });
-                show_adas_geo(map.getViewBounds().getCenter(), map.getViewBounds().getCenter().distance(map.getViewBounds().getBottomRight()));
             });
             var ui = H.ui.UI.createDefault(map, defaultLayers);
             var xmlHttp;
@@ -241,7 +238,7 @@
                     radius = 10000;
                 }
                 console.log(radius);
-                var pde_proximity_url = 'https://pde.cit.api.here.com/1/search/proximity.json?app_id=' + he_appid + '&app_code=' + he_appcode + '&layer_ids=' + adas_layers + '&proximity=' + center.lat + ',' + center.lng + ',' + radius + '&key_attributes=' + adas_key_attrs;
+                var pde_proximity_url = 'https://s.fleet.ls.hereapi.com/1/search/proximity.json?apikey=' + he_apikey + '&layer_ids=' + adas_layers + '&proximity=' + center.lat + ',' + center.lng + ',' + radius + '&key_attributes=' + adas_key_attrs;
                 console.log(pde_proximity_url);
 
                 function incremental_value_calculator(input, denominator) {
@@ -372,7 +369,7 @@
             function select_link(evt) {
                 var center = map.screenToGeo(evt.viewportX, evt.viewportY);
                 document.getElementById('pde_adas').innerHTML = '<mark>Loading ADAS from HERE Platform Data Extension...</mark>';
-                var pde_proximity_url = 'https://pde.cit.api.here.com/1/search/proximity.json?app_id=' + he_appid + '&app_code=' + he_appcode + '&layer_ids=' + adas_layers + '&proximity=' + center.lat + ',' + center.lng + ',' + 5 + '&key_attributes=' + adas_key_attrs;
+                var pde_proximity_url = 'https://s.fleet.ls.hereapi.com/1/search/proximity.json?apikey=' + he_apikey + '&layer_ids=' + adas_layers + '&proximity=' + center.lat + ',' + center.lng + ',' + 5 + '&key_attributes=' + adas_key_attrs;
 
                 function incremental_value_calculator(input, denominator) {
                     var output_list = [];
@@ -446,14 +443,16 @@
                 marker_group.removeAll();
                 adas_geo_group.removeAll();
                 document.getElementById('pde_adas').innerHTML = '';
-                show_adas_geo(map.getViewBounds().getCenter(), map.getViewBounds().getCenter().distance(map.getViewBounds().getBottomRight()));
+                var center = map.getViewModel().getLookAtData().position;
+                var radius = map.getViewModel().getLookAtData().bounds.getBoundingBox().getTopLeft().distance(center);
+                show_adas_geo(center, radius);
             });
             map.addEventListener('contextmenu', select_link);
             map.addEventListener('tap', function () {
                 selected_link_group.removeAll();
                 document.getElementById('pde_adas').innerHTML = '<mark>Right Click To Check LINK, Left Click To Clear The View.</mark>';
             });
-            show_adas_geo(map.getViewBounds().getCenter(), map.getViewBounds().getCenter().distance(map.getViewBounds().getBottomRight()));
+            
             /*
             display_adas_slope_layers(function () {
                 show_adas_geo(map.getViewBounds().getCenter(), map.getViewBounds().getCenter().distance(map.getViewBounds().getBottomRight()));
